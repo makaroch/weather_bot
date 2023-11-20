@@ -1,6 +1,6 @@
 import telebot
 import requests
-from sourse import MY_TOKEN
+from sourse import MY_TOKEN, API_KEY
 from weather import get_weather
 
 bot = telebot.TeleBot(MY_TOKEN)
@@ -22,6 +22,10 @@ def welcome(message):
 def hello(message):
     print(f'{message.from_user.first_name}: {message.chat.id}')
     bot.send_message(message.chat.id, f"Привет, {message.from_user.first_name} ")
+
+@bot.message_handler(commands=["information"])
+def information(message):
+    bot.send_message(message.chat.id, f"ключ: {API_KEY}")
 
 
 @bot.message_handler(commands=["weather"])
