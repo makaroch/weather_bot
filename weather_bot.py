@@ -1,7 +1,7 @@
 import telebot
 import requests
 from sourse import MY_TOKEN, API_KEY
-from weather import get_weather
+from weather import get_weather, WeatherException
 
 bot = telebot.TeleBot(MY_TOKEN)
 
@@ -25,27 +25,25 @@ def hello(message):
 
 @bot.message_handler(commands=["information"])
 def information(message):
-    bot.send_message(message.chat.id, f"ключ: {API_KEY}")
-
-
-@bot.message_handler(commands=["weather"])
-def get_w(message):
-    bot.send_message(message.chat.id, "Введите название города")
-    bot.register_next_step_handler(message, write_weather)
+    bot.send_message(message.chat.id, f"1. ключ: `{API_KEY}` \n"
+                                      f"2. документация: [https://openweathermap.org/current](https://openweathermap.org/current)\n"
+                                      f"3. установка requests: `pip install requests`\n"
+                                      f"4. установка telebot: `pip install pyTelegramBotAPI`", parse_mode="MARKDOWN")
 
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
-    if message.text.lower().replace(" ", "") == "какойпесельтысегодня?":
-        bot.send_message(message.chat.id, "Иии тебе выпал вот <i>такой!!!</i>", parse_mode='html')
-        get_img(message)
+    write_weather(message)
 
 
 def write_weather(message):
+    text_weather: str = ""
     try:
         text_weather = get_weather(message.text)
-    except Exception as e:
+    except WeatherException as e:
         text_weather = str(e)
+    except Exception as e:
+        print(e)
     bot.send_message(message.chat.id, text_weather, parse_mode="html")
 
 
